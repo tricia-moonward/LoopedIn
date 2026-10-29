@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
+import type { CompareChart } from '@/components/people/insights';
 import type { ConnectionType } from '@/state/invites';
 
 export type CheckIn = {
@@ -25,6 +26,8 @@ export type Connection = {
   checkIn?: CheckIn;
   // "Your connection" card on the Overview tab.
   insight: { title: string; body: string; basis: string };
+  // "How you two compare". Missing until you've both answered enough questions.
+  chart?: CompareChart;
   keyDates: KeyDate[];
 };
 
@@ -46,6 +49,15 @@ let connections: Connection[] = [
       body: 'You open things up, Sam keeps them grounded. You both want closeness and trust, you just reach for them at different speeds.',
       basis: 'Based on 8 answers each + 12 check-ins',
     },
+    // Read off the Figma chart (170:4398).
+    chart: {
+      you: { feelingLoved: 0.8, tension: 0.45, roughDays: 0.62, talking: 0.55, energy: 0.42, values: 0.74 },
+      them: { feelingLoved: 0.4, tension: 0.84, roughDays: 0.46, talking: 0.78, energy: 0.76, values: 0.62 },
+      biggestDifference: {
+        axis: 'energy',
+        body: 'You recharge out with people. Sam recharges with quiet time at home. After a big week, plan one of each.',
+      },
+    },
     keyDates: [],
   },
   {
@@ -56,6 +68,15 @@ let connections: Connection[] = [
       title: 'Easy & Upbeat',
       body: 'You both bring the energy and say what you think. Make sure the quieter catch-ups get airtime too.',
       basis: 'Based on 8 answers each + 3 check-ins',
+    },
+    // Placeholder; only Sam's chart is designed.
+    chart: {
+      you: { feelingLoved: 0.7, tension: 0.5, roughDays: 0.6, talking: 0.85, energy: 0.8, values: 0.65 },
+      them: { feelingLoved: 0.6, tension: 0.55, roughDays: 0.7, talking: 0.5, energy: 0.75, values: 0.7 },
+      biggestDifference: {
+        axis: 'talking',
+        body: 'You like to talk things through straight away. Amy needs a little time first. Give her a heads-up before the big chats.',
+      },
     },
     keyDates: [],
   },

@@ -103,3 +103,23 @@ export const TAB_CONTENT: Record<Exclude<ConnectionTab, 'overview'>, TabContent>
     ],
   },
 };
+
+// "How you two compare" chart axes, clockwise from the top (Figma 170:4398). Tapping a
+// label shows its meaning; the meanings aren't in the design yet, so this is placeholder copy.
+export const CHART_AXES = [
+  { key: 'feelingLoved', label: 'Feeling loved', meaning: 'How much you each need to hear and feel love day to day.' },
+  { key: 'tension', label: 'Tension', meaning: 'How quickly you each want to deal with friction when it comes up.' },
+  { key: 'roughDays', label: 'Rough days', meaning: 'How much support you each reach for when a day goes badly.' },
+  { key: 'talking', label: 'Talking', meaning: 'How much you each like to talk things through, and how often.' },
+  { key: 'energy', label: 'Energy', meaning: 'Whether you recharge out with people or at home with quiet time.' },
+  { key: 'values', label: 'Values', meaning: 'How closely what matters most to you lines up, from family to money.' },
+] as const;
+
+export type ChartAxis = (typeof CHART_AXES)[number]['key'];
+
+export type CompareChart = {
+  // 0 (centre) to 1 (outer ring) on each axis.
+  you: Record<ChartAxis, number>;
+  them: Record<ChartAxis, number>;
+  biggestDifference: { axis: ChartAxis; body: string };
+};

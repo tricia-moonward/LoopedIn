@@ -72,6 +72,7 @@ export default function PeopleScreen() {
 
   const onTab = (tab: NavTab) => {
     if (tab === 'home') router.replace('/home');
+    if (tab === 'you') router.replace('/you');
   };
 
   return (

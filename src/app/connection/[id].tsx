@@ -8,8 +8,10 @@ import ArrowBack from '@assets/icons/arrow-back.svg';
 import MoreHoriz from '@assets/icons/more-horiz.svg';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
+import { CheckInCard } from '@/components/CheckInCard';
 import { FadeIn } from '@/components/FadeIn';
 import { ComparisonCard } from '@/components/people/ComparisonCard';
+import { ConnectionChart } from '@/components/people/ConnectionChart';
 import { KeyDateCard } from '@/components/people/KeyDateCard';
 import { CONNECTION_TABS, TAB_CONTENT, type ConnectionTab } from '@/components/people/insights';
 import { KeyDateSheet } from '@/components/sheets/KeyDateSheet';
@@ -93,7 +95,7 @@ export default function ConnectionScreen() {
             <Text style={styles.name}>{connection.name}</Text>
             <Badge label={`${type.emoji}  ${type.name.toUpperCase()}`} background={colors.white} size="small" />
           </View>
-          <CheckInCard connection={connection} />
+          <ConnectionCheckIn connection={connection} />
         </FadeIn>
 
         <View style={styles.tabs}>
@@ -120,11 +122,6 @@ export default function ConnectionScreen() {
         <FadeIn key={tab} style={styles.tabContent}>
           {tab === 'overview' ? (
             <>
-              {/* Lily tucked behind the left edge of the connection card. */}
-              <View pointerEvents="none" style={[styles.decor, { left: -77 * scale, top: 107 }]}>
-                <Image source={lily} contentFit="contain" style={{ width: 158 * scale, height: 146 * scale }} />
-              </View>
-
               <View style={[styles.card, { borderColor: type.background }]}>
                 <View style={styles.cardHeading}>
                   <Text style={styles.cardTitle}>{connection.insight.title}</Text>
@@ -133,6 +130,27 @@ export default function ConnectionScreen() {
                 <Text style={styles.cardBody}>{connection.insight.body}</Text>
                 <Text style={styles.basis}>{connection.insight.basis}</Text>
               </View>
+
+              {connection.chart && (
+                <View style={styles.decorWrap}>
+                  {/* Lily behind the left edge and a faint statue by the top right (Figma 170:4369). */}
+                  <View pointerEvents="none" style={[styles.decor, { left: -72 * scale, top: 65 }]}>
+                    <Image source={lily} contentFit="contain" style={{ width: 158 * scale, height: 146 * scale }} />
+                  </View>
+                  <View pointerEvents="none" style={[styles.decor, { left: 279 * scale, top: 5 }]}>
+                    <View style={[styles.centred, { position: 'relative', width: 187.06 * scale, height: 207.874 * scale }]}>
+                      <Image
+                        source={statueDark}
+                        contentFit="cover"
+                        style={{ width: 135 * scale, height: 171 * scale, opacity: 0.2, transform: [{ rotate: '-20.87deg' }] }}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.chartColumn}>
+                    <ConnectionChart chart={connection.chart} name={connection.name.split(' ')[0]} />
+                  </View>
+                </View>
+              )}
 
               <View style={styles.keyDatesWrap}>
                 <View pointerEvents="none" style={[styles.decor, { left: 279 * scale, top: 3 }]}>
@@ -207,7 +225,7 @@ export default function ConnectionScreen() {
 }
 
 // Their latest check-in with a suggestion, or a placeholder until they've done one.
-function CheckInCard({ connection }: { connection: Connection }) {
+function ConnectionCheckIn({ connection }: { connection: Connection }) {
   const { checkIn } = connection;
   if (!checkIn) {
     return (
@@ -220,20 +238,13 @@ function CheckInCard({ connection }: { connection: Connection }) {
     );
   }
   return (
-    <View style={styles.checkInWrap}>
-      <View style={styles.checkIn}>
-        <Badge label="✨ TODAY’S INSIGHT" background={colors.accentBlue} />
-        <View style={styles.mood}>
-          <Text style={styles.cardTitle}>{checkIn.mood}</Text>
-          <Text style={[styles.cardBody, styles.centredText]}>{checkIn.note}</Text>
-        </View>
-        <Text style={styles.sharedAgo}>{checkIn.sharedAgo}</Text>
-      </View>
-      <View style={styles.tryThis}>
-        <Text style={styles.tryThisLabel}>💡 TRY THIS</Text>
-        <Text style={styles.cardBody}>{checkIn.tryThis}</Text>
-      </View>
-    </View>
+    <CheckInCard
+      mood={checkIn.mood}
+      note={checkIn.note}
+      sharedAgo={checkIn.sharedAgo}
+      tryThis={checkIn.tryThis}
+      tone="blue"
+    />
   );
 }
 
@@ -266,7 +277,6 @@ const styles = StyleSheet.create({
   intro: { width: 361, maxWidth: '92%', alignItems: 'center', gap: 32 },
   nameBlock: { alignItems: 'center', gap: 16 },
   name: { fontFamily: fonts.serif, fontSize: 32, lineHeight: 32, letterSpacing: -0.96, color: colors.black1000 },
-  checkInWrap: { alignSelf: 'stretch' },
   checkIn: {
     alignSelf: 'stretch',
     alignItems: 'center',
@@ -277,17 +287,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   checkInEmpty: { gap: 16 },
-  mood: { alignSelf: 'stretch', gap: 8 },
-  sharedAgo: { fontFamily: fonts.sansMedium, fontSize: 12, letterSpacing: -0.36, color: colors.black600 },
-  tryThis: {
-    gap: 8,
-    padding: 16,
-    borderWidth: 1,
-    borderTopWidth: 0,
-    borderColor: colors.black1000,
-    backgroundColor: colors.accentBlue,
-  },
-  tryThisLabel: { fontFamily: fonts.sansBold, fontSize: 12, letterSpacing: -0.36, color: colors.black1000 },
   tabs: { alignSelf: 'stretch', gap: 16 },
   rule: { height: 1, backgroundColor: colors.black1000 },
   tabRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16 },
@@ -321,6 +320,9 @@ const styles = StyleSheet.create({
   centredText: { textAlign: 'center' },
   basis: { alignSelf: 'stretch', fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 16.8, color: colors.black600 },
   keyDatesWrap: { alignSelf: 'stretch', alignItems: 'center' },
+  decorWrap: { alignSelf: 'stretch', alignItems: 'center' },
+  // Same width as the cards around it.
+  chartColumn: { width: 361, maxWidth: '92%' },
   keyDatesHeading: { alignSelf: 'stretch', gap: 8 },
   comparisons: { width: 361, maxWidth: '92%', gap: 16 },
 });

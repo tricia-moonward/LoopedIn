@@ -2,18 +2,20 @@ import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState, type ReactNode } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ArrowForward from '@assets/icons/arrow-forward.svg';
 import ArrowForwardDark from '@assets/icons/arrow-forward-dark.svg';
 import { Artwork } from '@/components/Artwork';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
+import { CheckInCard } from '@/components/CheckInCard';
 import { FadeIn } from '@/components/FadeIn';
 import { NavBar, type NavTab } from '@/components/NavBar';
 import { useProfile } from '@/components/profileQuiz/profiles';
 import { HomeKeyDates } from '@/components/people/HomeKeyDates';
 import { InviteSheet } from '@/components/sheets/InviteSheet';
+import { checkedInAgo, moodLabel, suggestionFor, useTodayCheckIn } from '@/state/checkIn';
 import { useFirstName } from '@/state/profile';
 import { colors, fonts, useDesignScale } from '@/theme';
 
@@ -45,12 +47,13 @@ export default function HomeScreen() {
   const { invite } = useLocalSearchParams<{ invite?: string }>();
   const firstName = useFirstName();
   const profile = useProfile();
+  const checkIn = useTodayCheckIn();
   const { scale } = useDesignScale();
   const [inviting, setInviting] = useState(invite === '1');
 
   const onTab = (tab: NavTab) => {
-    // The You tab isn't designed yet.
     if (tab === 'people') router.replace('/people');
+    if (tab === 'you') router.replace('/you');
   };
 
   return (
@@ -100,17 +103,44 @@ export default function HomeScreen() {
         <FadeIn delay={90} style={styles.cards}>
           <HomeKeyDates />
 
-          <Card style={styles.checkInCard}>
-            <CardHeading title="How are you feeling?">
-              <Badge label="💭 DAILY CHECK IN" background={colors.accentLime} />
-            </CardHeading>
-            <Text style={styles.cardBody}>
-              How you’re doing, what’s going on, and one quick question. The more you share, the better LoopedIn gets
-              to know you.
-            </Text>
-            {/* TODO: daily check-in once it's designed in. */}
-            <Button label="Start check-in" trailingIcon={<ArrowForward width={16} height={16} />} />
-          </Card>
+          {checkIn ? (
+            // Figma: Check in / "Home / Feed" (170:4313), once today's check-in is done.
+            <View style={styles.checkedIn}>
+              <CheckInCard
+                mood={moodLabel(checkIn)}
+                note={checkIn.note ? `“${checkIn.note}”` : undefined}
+                sharedAgo={checkedInAgo(checkIn)}
+                tryThis={suggestionFor(checkIn)}
+                tone="purple"
+              />
+              <Card style={[styles.checkInCard, styles.inGroup]}>
+                <CardHeading title="You’re checked in">
+                  <Badge label="💭 DAILY CHECK IN" background={colors.accentLime} />
+                </CardHeading>
+                <Text style={styles.cardBody}>That’s today done. Your next question will be ready tomorrow morning.</Text>
+                <Button
+                  label="View today’s check-in"
+                  trailingIcon={<ArrowForward width={16} height={16} />}
+                  onPress={() => router.push('/check-in')}
+                />
+              </Card>
+            </View>
+          ) : (
+            <Card style={styles.checkInCard}>
+              <CardHeading title="How are you feeling?">
+                <Badge label="💭 DAILY CHECK IN" background={colors.accentLime} />
+              </CardHeading>
+              <Text style={styles.cardBody}>
+                How you’re doing, what’s going on, and one quick question. The more you share, the better LoopedIn gets
+                to know you.
+              </Text>
+              <Button
+                label="Start check-in"
+                trailingIcon={<ArrowForward width={16} height={16} />}
+                onPress={() => router.push('/check-in')}
+              />
+            </Card>
+          )}
 
           <Divider />
 
@@ -149,10 +179,22 @@ export default function HomeScreen() {
 
         {/* Decorative cut-outs, layered over the cards as in the design. */}
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Artwork source={lily} x={316} y={451} width={158} height={146} />
-          <Artwork source={lily} x={-33} y={706} width={96} height={89} />
-          <Artwork source={orchid} x={313} y={710} width={158} height={148} />
-          <Artwork source={orchid} x={-44} y={1034} width={122} height={115} />
+          {checkIn ? (
+            // Spread further down once the check-in cards make the page taller (Figma 170:4193).
+            <>
+              <Artwork source={lily} x={348} y={448} width={158} height={146} />
+              <Artwork source={lily} x={-51} y={598} width={96} height={89} />
+              <Artwork source={orchid} x={317} y={812} width={158} height={148} />
+              <Artwork source={orchid} x={-84} y={1104} width={122} height={115} />
+            </>
+          ) : (
+            <>
+              <Artwork source={lily} x={316} y={451} width={158} height={146} />
+              <Artwork source={lily} x={-33} y={706} width={96} height={89} />
+              <Artwork source={orchid} x={313} y={710} width={158} height={148} />
+              <Artwork source={orchid} x={-44} y={1034} width={122} height={115} />
+            </>
+          )}
           {/* Sits on the bottom of the page, however tall the cards make it, running on
               behind the navBar as in Figma (clipped there). */}
           <Image
@@ -172,7 +214,7 @@ export default function HomeScreen() {
   );
 }
 
-function Card({ style, children }: { style?: object; children: ReactNode }) {
+function Card({ style, children }: { style?: StyleProp<ViewStyle>; children: ReactNode }) {
   return <View style={[styles.card, style]}>{children}</View>;
 }
 
@@ -216,6 +258,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   checkInCard: { backgroundColor: colors.white, borderColor: colors.black1000 },
+  // Insight card and "You're checked in" card, 16 apart, with the 16pt gutter.
+  checkedIn: { alignSelf: 'stretch', gap: 16, marginHorizontal: 16 },
+  inGroup: { marginHorizontal: 0 },
   cardHeading: { alignSelf: 'stretch', alignItems: 'center', gap: 16 },
   cardTitle: {
     fontFamily: fonts.serif,
