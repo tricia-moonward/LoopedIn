@@ -11,9 +11,9 @@ import { colors, useDesignScale } from '@/theme';
 export function HomeKeyDates() {
   const connections = useConnections();
   const { width } = useDesignScale();
-  // Same width as the cards below (361, or 92% on narrow phones). Worked out from the
-  // screen rather than measured, so every page is full width from the first frame.
-  const pageWidth = Math.min(361, width * 0.92);
+  // Same width as the cards below (screen width less a 16pt gutter each side). Worked out
+  // from the screen rather than measured, so every page is full width from the first frame.
+  const pageWidth = width - 32;
   const [page, setPage] = useState(0);
 
   const items = useMemo(

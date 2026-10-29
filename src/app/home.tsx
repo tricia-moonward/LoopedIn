@@ -26,9 +26,11 @@ const lily = require('@assets/images/lily-small.png');
 const orchid = require('@assets/images/orchid.png');
 const statueDark = require('@assets/images/statue-dark.png');
 
-// Figma frame is 1482 tall (1497 with a key date countdown); cards start at 221.
+// Figma frame is 1482 tall (1497 with a key date countdown); cards start at 221 and the
+// page scrolls until the last card sits 39 above the 73-tall navBar.
 const CARDS_TOP = 221;
-const PAGE_BOTTOM_PADDING = 233;
+const PAGE_BOTTOM_PADDING = 39;
+const NAV_BAR_HEIGHT = 73;
 
 // "Tuesday, 20 October"
 function formatToday() {
@@ -55,7 +57,8 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <StatusBar style="light" />
       <ScrollView
-        contentContainerStyle={{ paddingTop: CARDS_TOP, paddingBottom: PAGE_BOTTOM_PADDING }}
+        // Clip the oversized background art so it can't add scrollable space.
+        contentContainerStyle={{ paddingTop: CARDS_TOP, paddingBottom: PAGE_BOTTOM_PADDING, overflow: 'hidden' }}
         showsVerticalScrollIndicator={false}
       >
         {/* Dark header with the statue at 50%. */}
@@ -150,11 +153,15 @@ export default function HomeScreen() {
           <Artwork source={lily} x={-33} y={706} width={96} height={89} />
           <Artwork source={orchid} x={313} y={710} width={158} height={148} />
           <Artwork source={orchid} x={-44} y={1034} width={122} height={115} />
-          {/* Sits on the bottom of the page, however tall the cards make it. */}
+          {/* Sits on the bottom of the page, however tall the cards make it, running on
+              behind the navBar as in Figma (clipped there). */}
           <Image
             source={statueDark}
             contentFit="contain"
-            style={[styles.statueDark, { left: 90 * scale, width: 223 * scale, height: 282 * scale }]}
+            style={[
+              styles.statueDark,
+              { left: 90 * scale, bottom: -NAV_BAR_HEIGHT * scale, width: 223 * scale, height: 282 * scale },
+            ]}
           />
         </View>
       </ScrollView>
@@ -199,9 +206,10 @@ const styles = StyleSheet.create({
   },
   date: { fontFamily: fonts.sansMedium, fontSize: 14, letterSpacing: -0.42, color: colors.white },
   cards: { alignItems: 'center', gap: 32 },
+  // Full width with a 16pt gutter each side.
   card: {
-    width: 361,
-    maxWidth: '92%',
+    alignSelf: 'stretch',
+    marginHorizontal: 16,
     padding: 16,
     gap: 16,
     alignItems: 'center',
@@ -226,5 +234,5 @@ const styles = StyleSheet.create({
     color: colors.black800,
   },
   divider: { alignSelf: 'stretch', height: 1, backgroundColor: colors.black1000 },
-  statueDark: { position: 'absolute', bottom: 0, opacity: 0.2 },
+  statueDark: { position: 'absolute', opacity: 0.2 },
 });

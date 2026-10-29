@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ArrowForward from '@assets/icons/arrow-forward.svg';
 import ChevronRight from '@assets/icons/chevron-right.svg';
@@ -24,6 +25,10 @@ const hands = require('@assets/images/hands-reaching.png');
 const paper = require('@assets/images/paper-texture.png');
 const tornPaper = require('@assets/images/torn-paper.png');
 const orchid = require('@assets/images/orchid-blue.png');
+
+// Figma lays the page out under a 59-tall status bar. Where the real inset is shorter
+// (web, older phones) the whole page moves up by the difference so there's no gap.
+const FIGMA_STATUS_BAR = 59;
 
 // "Your core read" copy from the design; not yet generated from quiz answers.
 const CORE_READ = [
@@ -63,6 +68,7 @@ export default function PeopleScreen() {
   const connections = useConnections();
   const pendingRequests = useInviteRequests().length;
   const [inviting, setInviting] = useState(false);
+  const lift = Math.max(0, FIGMA_STATUS_BAR - useSafeAreaInsets().top);
 
   const onTab = (tab: NavTab) => {
     if (tab === 'home') router.replace('/home');
@@ -71,9 +77,12 @@ export default function PeopleScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingTop: 155 - lift }]}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Sky-blue header with the reaching hands, rotated -30° at 30%. */}
-        <View style={[styles.header, { left: -6 * scale, width: 404 * scale, height: 287 * scale }]}>
+        <View style={[styles.header, { top: -lift, left: -6 * scale, width: 404 * scale, height: 287 * scale }]}>
           <LinearGradient
             colors={['rgba(120,203,255,0.9)', 'rgba(255,255,255,0.9)']}
             locations={[0.41143, 0.99977]}
@@ -101,13 +110,16 @@ export default function PeopleScreen() {
         <Image
           source={paper}
           contentFit="cover"
-          style={[styles.paper, { left: -337 * scale, top: -30 * scale, width: 1134 * scale, height: 1680 * scale }]}
+          style={[
+            styles.paper,
+            { left: -337 * scale, top: -30 * scale - lift, width: 1134 * scale, height: 1680 * scale },
+          ]}
         />
         <View
           pointerEvents="none"
           style={[
             styles.centred,
-            { left: -175.74 * scale, top: 99.22 * scale, width: 727.3 * scale, height: 509.157 * scale },
+            { left: -175.74 * scale, top: 99.22 * scale - lift, width: 727.3 * scale, height: 509.157 * scale },
           ]}
         >
           <Image
@@ -117,7 +129,7 @@ export default function PeopleScreen() {
           />
         </View>
 
-        <FadeIn style={styles.titleRow}>
+        <FadeIn style={[styles.titleRow, { top: 91 - lift }]}>
           <Text style={styles.pageTitle}>People</Text>
           <Pressable
             accessibilityRole="button"
@@ -226,15 +238,15 @@ export default function PeopleScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
-  content: { paddingTop: 155, paddingBottom: 80 },
-  header: { position: 'absolute', top: 0, overflow: 'hidden', backgroundColor: colors.white },
+  // Clips the oversized background art so it can't add scrollable space.
+  content: { paddingBottom: 80, overflow: 'hidden' },
+  header: { position: 'absolute', overflow: 'hidden', backgroundColor: colors.white },
   centred: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
   paper: { position: 'absolute', opacity: 0.4, mixBlendMode: 'multiply' },
   titleRow: {
     position: 'absolute',
     left: 16,
     right: 16,
-    top: 91,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -262,9 +274,10 @@ const styles = StyleSheet.create({
   },
   countText: { fontFamily: fonts.serif, fontSize: 6, lineHeight: 6, color: colors.black1000 },
   sections: { alignItems: 'center', gap: 32 },
+  // Full width with a 16pt gutter each side, like the column below.
   inviteCard: {
-    width: 361,
-    maxWidth: '92%',
+    alignSelf: 'stretch',
+    marginHorizontal: 16,
     padding: 16,
     gap: 16,
     alignItems: 'center',
@@ -290,7 +303,7 @@ const styles = StyleSheet.create({
     color: colors.black800,
   },
   divider: { alignSelf: 'stretch', height: 1, backgroundColor: colors.black1000 },
-  column: { width: 361, maxWidth: '92%' },
+  column: { alignSelf: 'stretch', marginHorizontal: 16 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   sectionTitle: { fontFamily: fonts.serif, fontSize: 24, lineHeight: 24, letterSpacing: -0.72, color: colors.black1000 },
