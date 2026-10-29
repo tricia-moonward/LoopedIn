@@ -15,6 +15,7 @@ import { NavBar, type NavTab } from '@/components/NavBar';
 import { useProfile } from '@/components/profileQuiz/profiles';
 import { HomeKeyDates } from '@/components/people/HomeKeyDates';
 import { InviteSheet } from '@/components/sheets/InviteSheet';
+import { PaperTexture } from '@/components/PaperTexture';
 import { checkedInAgo, moodLabel, suggestionFor, useTodayCheckIn } from '@/state/checkIn';
 import { useFirstName } from '@/state/profile';
 import { colors, fonts, useDesignScale } from '@/theme';
@@ -22,7 +23,6 @@ import { colors, fonts, useDesignScale } from '@/theme';
 // Flowers and statue are flat dithered exports from Figma; the header statue isn't
 // dithered (same file as the "You're all set" background).
 const statue = require('@assets/images/statue-faint.png');
-const paper = require('@assets/images/paper-texture.png');
 const tornPaper = require('@assets/images/torn-paper.png');
 const lily = require('@assets/images/lily-small.png');
 const orchid = require('@assets/images/orchid.png');
@@ -72,14 +72,7 @@ export default function HomeScreen() {
             style={{ position: 'absolute', top: -97 * scale, width: 401 * scale, height: 507 * scale, opacity: 0.5 }}
           />
         </View>
-        <Image
-          source={paper}
-          contentFit="cover"
-          style={[
-            styles.paper,
-            { left: -260 * scale, top: -30 * scale, width: 980 * scale, height: 1453 * scale },
-          ]}
-        />
+        <PaperTexture />
         {/* Torn paper edge along the bottom of the header, rotated 72° as in Figma. */}
         <View
           pointerEvents="none"
@@ -235,7 +228,6 @@ function Divider() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   header: { position: 'absolute', top: 0, backgroundColor: colors.black1000, overflow: 'hidden' },
-  paper: { position: 'absolute', opacity: 0.4, mixBlendMode: 'multiply' },
   tornBox: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
   greeting: { position: 'absolute', left: 16, top: 83, gap: 8 },
   hello: {

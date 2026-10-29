@@ -12,11 +12,11 @@ import { FadeIn } from '@/components/FadeIn';
 import { NavBar, type NavTab } from '@/components/NavBar';
 import { ProfileCard } from '@/components/you/ProfileCard';
 import { PATTERNS, PROFILE_SECTIONS } from '@/components/you/profile';
+import { PaperTexture } from '@/components/PaperTexture';
 import { colors, fonts, useDesignScale } from '@/theme';
 
 // Dithered, red-tinted flower (a shader effect in Figma, exported flat as it renders).
-const header = require('@assets/images/you-header.png');
-const paper = require('@assets/images/paper-texture.png');
+const header = require('@assets/images/you-header.webp');
 const tornPaper = require('@assets/images/torn-paper.png');
 // Same file as Figma's "Illustration / Hand Mirror".
 const handMirror = require('@assets/images/bulb.png');
@@ -72,14 +72,7 @@ export default function YouScreen() {
             }}
           />
         </View>
-        <Image
-          source={paper}
-          contentFit="cover"
-          style={[
-            styles.paper,
-            { left: -337 * scale, top: -30 * scale - lift, width: 1134 * scale, height: 2037 * scale },
-          ]}
-        />
+        <PaperTexture />
 
         <FadeIn style={[styles.titleRow, { top: 91 - lift }]}>
           <Text style={styles.pageTitle}>You</Text>
@@ -194,7 +187,6 @@ const styles = StyleSheet.create({
   // Clips the oversized background art so it can't add scrollable space.
   content: { paddingBottom: PAGE_BOTTOM_PADDING, overflow: 'hidden' },
   centred: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
-  paper: { position: 'absolute', opacity: 0.4, mixBlendMode: 'multiply' },
   decor: { position: 'absolute', zIndex: 1 },
   titleRow: {
     position: 'absolute',

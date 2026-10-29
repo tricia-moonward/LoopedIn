@@ -15,14 +15,14 @@ import { Button } from '@/components/Button';
 import { FadeIn } from '@/components/FadeIn';
 import { NavBar, type NavTab } from '@/components/NavBar';
 import { InviteSheet } from '@/components/sheets/InviteSheet';
+import { PaperTexture } from '@/components/PaperTexture';
 import { useConnections } from '@/state/connections';
 import { CONNECTION_TYPES, useInviteRequests } from '@/state/invites';
 import { colors, fonts, useDesignScale } from '@/theme';
 
-// The header hands have a dither + bloom effect in Figma that can't run in React Native,
-// so this is the plain photo at 30%. Swap in a baked export to match exactly.
-const hands = require('@assets/images/hands-reaching.png');
-const paper = require('@assets/images/paper-texture.png');
+// The reaching hands, exported from Figma with their dither, -30° turn and 30% opacity baked
+// in, cropped to the header.
+const hands = require('@assets/images/people-hands.png');
 const tornPaper = require('@assets/images/torn-paper.png');
 const orchid = require('@assets/images/orchid-blue.png');
 
@@ -82,40 +82,20 @@ export default function PeopleScreen() {
         contentContainerStyle={[styles.content, { paddingTop: 155 - lift }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Sky-blue header with the reaching hands, rotated -30° at 30%. */}
+        {/* Sky-blue header with the reaching hands. */}
         <View style={[styles.header, { top: -lift, left: -6 * scale, width: 404 * scale, height: 287 * scale }]}>
           <LinearGradient
             colors={['rgba(120,203,255,0.9)', 'rgba(255,255,255,0.9)']}
             locations={[0.41143, 0.99977]}
             style={StyleSheet.absoluteFill}
           />
-          <View
-            style={[
-              styles.centred,
-              { left: -120 * scale, top: -116 * scale, width: 600.735 * scale, height: 531.569 * scale },
-            ]}
-          >
-            <View
-              style={{
-                width: 508.935 * scale,
-                height: 319.969 * scale,
-                overflow: 'hidden',
-                opacity: 0.3,
-                transform: [{ rotate: '-30deg' }],
-              }}
-            >
-              <Image source={hands} contentFit="cover" style={{ width: '100%', height: '198.82%' }} />
-            </View>
-          </View>
+          <Image
+            source={hands}
+            contentFit="cover"
+            style={{ position: 'absolute', left: 6 * scale, top: 0, width: 393 * scale, height: 287 * scale }}
+          />
         </View>
-        <Image
-          source={paper}
-          contentFit="cover"
-          style={[
-            styles.paper,
-            { left: -337 * scale, top: -30 * scale - lift, width: 1134 * scale, height: 1680 * scale },
-          ]}
-        />
+        <PaperTexture />
         <View
           pointerEvents="none"
           style={[
@@ -243,7 +223,6 @@ const styles = StyleSheet.create({
   content: { paddingBottom: 80, overflow: 'hidden' },
   header: { position: 'absolute', overflow: 'hidden', backgroundColor: colors.white },
   centred: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
-  paper: { position: 'absolute', opacity: 0.4, mixBlendMode: 'multiply' },
   titleRow: {
     position: 'absolute',
     left: 16,

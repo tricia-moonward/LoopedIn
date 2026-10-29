@@ -15,13 +15,13 @@ import { ConnectionChart } from '@/components/people/ConnectionChart';
 import { KeyDateCard } from '@/components/people/KeyDateCard';
 import { CONNECTION_TABS, TAB_CONTENT, type ConnectionTab } from '@/components/people/insights';
 import { KeyDateSheet } from '@/components/sheets/KeyDateSheet';
+import { PaperTexture } from '@/components/PaperTexture';
 import { useConnection, type Connection, type KeyDate } from '@/state/connections';
 import { CONNECTION_TYPES } from '@/state/invites';
 import { colors, fonts, useDesignScale } from '@/theme';
 
-const sky = require('@assets/images/sky.png');
+const header = require('@assets/images/connection-header.webp');
 const statueDark = require('@assets/images/statue-dark.png');
-const paper = require('@assets/images/paper-texture.png');
 const tornPaper = require('@assets/images/torn-paper.png');
 const lily = require('@assets/images/lily-small.png');
 
@@ -42,33 +42,14 @@ export default function ConnectionScreen() {
     <View style={styles.container}>
       <StatusBar style="dark" />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Faded sky and statue behind the name, at 40%. */}
-        <View
-          style={[styles.header, { left: -77 * scale, top: -57 * scale, width: 547 * scale, height: 448 * scale }]}
-        >
-          <Image
-            source={sky}
-            contentFit="cover"
-            style={{ position: 'absolute', left: -60 * scale, top: -21 * scale, width: 668 * scale, height: 1068 * scale }}
-          />
-          <Image
-            source={statueDark}
-            contentFit="cover"
-            style={{
-              position: 'absolute',
-              left: 130 * scale,
-              top: 96 * scale,
-              width: 287 * scale,
-              height: 362 * scale,
-              opacity: 0.2,
-            }}
-          />
-        </View>
+        {/* Faded sky and statue behind the name, exported from Figma at its 40% and cropped to
+            what shows on screen. */}
         <Image
-          source={paper}
+          source={header}
           contentFit="cover"
-          style={[styles.paper, { left: -337 * scale, top: -30 * scale, width: 1134 * scale, height: 1680 * scale }]}
+          style={{ position: 'absolute', left: 0, top: 0, width: 393 * scale, height: 391 * scale }}
         />
+        <PaperTexture />
         <View
           pointerEvents="none"
           style={[styles.centred, { left: -94 * scale, top: 169 * scale, width: 581.191 * scale, height: 406.871 * scale }]}
@@ -252,8 +233,6 @@ function ConnectionCheckIn({ connection }: { connection: Connection }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   content: { paddingTop: 146, paddingBottom: 64, alignItems: 'center', gap: 32 },
-  header: { position: 'absolute', overflow: 'hidden', backgroundColor: colors.white, opacity: 0.4 },
-  paper: { position: 'absolute', opacity: 0.4, mixBlendMode: 'multiply' },
   centred: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
   decor: { position: 'absolute' },
   topBar: {

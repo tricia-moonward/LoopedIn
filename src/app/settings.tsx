@@ -15,10 +15,10 @@ import HelpIcon from '@assets/icons/settings-help.svg';
 import LockIcon from '@assets/icons/settings-lock.svg';
 import PersonIcon from '@assets/icons/settings-person.svg';
 import { FadeIn } from '@/components/FadeIn';
+import { PaperTexture } from '@/components/PaperTexture';
 import { setFirstName } from '@/state/profile';
 import { colors, fonts, useDesignScale } from '@/theme';
 
-const paper = require('@assets/images/paper-texture.png');
 // Dithered statue at 10% (a shader effect in Figma, exported flat as it renders).
 const statue = require('@assets/images/settings-statue.png');
 
@@ -48,11 +48,7 @@ export default function SettingsScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
-      <Image
-        source={paper}
-        contentFit="cover"
-        style={[styles.paper, { left: -86 * scale, top: -30 * scale - lift, width: 635 * scale, height: 941 * scale }]}
-      />
+      <PaperTexture />
       <Image
         source={statue}
         contentFit="cover"
@@ -100,7 +96,6 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white, overflow: 'hidden' },
-  paper: { position: 'absolute', opacity: 0.4, mixBlendMode: 'multiply' },
   content: { paddingBottom: 48 },
   topBar: {
     height: 48,

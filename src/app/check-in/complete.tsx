@@ -31,7 +31,7 @@ export default function CheckInCompleteScreen() {
         contentContainerStyle={[styles.content, { paddingTop: FIGMA_STATUS_BAR - lift }]}
         showsVerticalScrollIndicator={false}
       >
-        <CheckInBackground lift={lift} paperHeight={1278} />
+        <CheckInBackground lift={lift} />
 
         <CheckInTopBar title="Daily Check-In" tone="light" onClose={() => router.replace('/home')} />
 

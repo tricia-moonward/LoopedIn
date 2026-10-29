@@ -99,7 +99,7 @@ export default function CheckInScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <CheckInBackground lift={lift} paperHeight={2446} />
+        <CheckInBackground lift={lift} />
 
         {/* Back to Home wherever the check-in was opened from (it may not be the screen below). */}
         <CheckInTopBar title="Daily Check-In" tone="light" onClose={() => router.dismissTo('/home')} />

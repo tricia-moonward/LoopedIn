@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
@@ -10,16 +9,14 @@ import { Button } from '@/components/Button';
 import { TextField } from '@/components/TextField';
 import { CheckInTopBar } from '@/components/checkIn/CheckInTopBar';
 import { PrivacyCaption } from '@/components/checkIn/PrivacyCaption';
+import { PaperTexture } from '@/components/PaperTexture';
 import { updateCheckIn, useCheckInDraft } from '@/state/checkIn';
-import { colors, useDesignScale } from '@/theme';
-
-const paper = require('@assets/images/paper-texture.png');
+import { colors } from '@/theme';
 
 // Figma: Check in / "journal entry / check in" (162:3091)
 export default function PrivateNoteScreen() {
   const draft = useCheckInDraft();
   const insets = useSafeAreaInsets();
-  const { scale } = useDesignScale();
   const [note, setNote] = useState(draft.note);
 
   // Close leaves the note as it was; Done keeps the edit.
@@ -31,11 +28,7 @@ export default function PrivateNoteScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
-      <Image
-        source={paper}
-        contentFit="cover"
-        style={[styles.paper, { left: -291 * scale, top: -30 * scale, width: 1043 * scale, height: 1546 * scale }]}
-      />
+      <PaperTexture />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         // The Done button sits 39 above the bottom of the frame.
@@ -64,7 +57,6 @@ export default function PrivateNoteScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white, overflow: 'hidden' },
-  paper: { position: 'absolute', opacity: 0.4, mixBlendMode: 'multiply' },
   page: { flex: 1, gap: 24 },
   // Top bar, note and caption, with the note taking the spare height (502 on the Figma
   // frame). The caption ends 85 above the Done button.
